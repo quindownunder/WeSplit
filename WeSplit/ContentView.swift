@@ -12,13 +12,18 @@ struct ContentView: View {
     
     @State private var checkAmount = ""
     @State private var numberOfPeople = 2
-    @State private var tipPercentage = 2
-    let tipPercentages = [10, 15, 20, 25, 0]
+    //@State private var tipPercentage = 2
+    @State private var tipAmount = "20"
+    //let tipPercentages = [10, 15, 20, 25, 0]
     
-    //computd propert
+    var tipPercentage: Int {
+        return Int(tipAmount) ?? 0
+    }
+    
+    //computed propert
     var totalPerPerson: Double {
         let peopleCount = Double(numberOfPeople + 2)
-        let tipSelection = Double(tipPercentages[tipPercentage])
+        let tipSelection = Double(tipPercentage)
         //nil coalescing operator
         let orderAmount = Double(checkAmount) ?? 0
 
@@ -27,6 +32,17 @@ struct ContentView: View {
         let amountPerPerson = grandTotal / peopleCount
 
         return amountPerPerson
+    }
+    
+    var grandTotal: Double {
+        let tipSelection = Double(tipPercentage)
+        //nil coalescing operator
+        let orderAmount = Double(checkAmount) ?? 0
+        
+        let tipValue = orderAmount / 100 * tipSelection
+        let grandTotal = orderAmount + tipValue
+        
+        return grandTotal
     }
     
     var body: some View {
@@ -44,19 +60,30 @@ struct ContentView: View {
                     }
                 
                     //segmented picker
+//                    Section(header: Text("How much tip do you want to leave?")) {
+//                        Picker("Tip percentage", selection: $tipPercentage) {
+//                            ForEach(0 ..< tipPercentages.count) {
+//                                Text("\(self.tipPercentages[$0])%")
+//                            }
+//                        }
+//                        .pickerStyle(SegmentedPickerStyle())
+//                    }
+                
                     Section(header: Text("How much tip do you want to leave?")) {
-                        Picker("Tip percentage", selection: $tipPercentage) {
-                            ForEach(0 ..< tipPercentages.count) {
-                                Text("\(self.tipPercentages[$0])%")
-                            }
-                        }
-                        .pickerStyle(SegmentedPickerStyle())
+                        TextField("Tip", text: $tipAmount)
+                            .keyboardType(.numberPad)
+                        
                     }
                     
-                    Section {
-                        
+                    Section(header: Text("Amount per person")) {
                         // c style operator https://en.wikipedia.org/wiki/Printf_format_string
                         Text("$\(totalPerPerson, specifier: "%.2f")")
+                        
+                    }
+                
+                    Section(header: Text("Grand total")) {
+                        // c style operator https://en.wikipedia.org/wiki/Printf_format_string
+                        Text("$\(grandTotal, specifier: "%.2f")")
                         
                     }
             }
